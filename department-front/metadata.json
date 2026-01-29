@@ -1,0 +1,5 @@
+{
+  "name": "TMT Department Automation Dashboard",
+  "description": "A clean, modern SaaS-style dashboard for the TMT Department to automate student onboarding and manage records.",
+  "requestFramePermissions": []
+}
