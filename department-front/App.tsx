@@ -254,7 +254,7 @@ const App: React.FC = () => {
             onMenuClick={() => setIsMobileMenuOpen(true)}
         />
 
-        <main className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden relative scrollbar-hide bg-[#030906]">
+        <main className="flex-1 min-h-0 relative bg-[#030906] overflow-y-auto overflow-x-hidden scrollbar-hide">
           {renderContent()}
         </main>
       </div>

@@ -33,6 +33,7 @@ const CreateStudentModal: React.FC<CreateStudentModalProps> = ({ isOpen, onClose
 
   const [programs, setPrograms] = useState<Program[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [successMessage, setSuccessMessage] = useState('');
 
   // Load programs (you'll need to add this API endpoint later)
   useEffect(() => {
@@ -53,7 +54,11 @@ const CreateStudentModal: React.FC<CreateStudentModalProps> = ({ isOpen, onClose
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    const confirmed = window.confirm('Confirm new enrollment?');
+    if (!confirmed) return;
+
     setIsLoading(true);
+    setSuccessMessage('');
     
     try {
       // Calculate a default due date (30 days from now)
@@ -68,8 +73,12 @@ const CreateStudentModal: React.FC<CreateStudentModalProps> = ({ isOpen, onClose
       };
 
       await onSave(studentData);
-      onClose();
+      setSuccessMessage('Enrollment created successfully');
       setFormData({ name: '', email: '', program_id: 1, discord_handle: '' });
+      setTimeout(() => {
+        setSuccessMessage('');
+        onClose();
+      }, 1200);
     } catch (error) {
       console.error('Error creating student:', error);
     } finally {
@@ -80,13 +89,13 @@ const CreateStudentModal: React.FC<CreateStudentModalProps> = ({ isOpen, onClose
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center px-4">
       <div 
-        className="absolute inset-0 bg-tmt-black/90 backdrop-blur-md transition-opacity" 
+        className="absolute inset-0 bg-black/80 backdrop-blur-xl transition-opacity" 
         onClick={onClose} 
       />
       
-      <div className="relative bg-[#033a2f] w-full max-w-lg rounded-[2.5rem] shadow-2xl overflow-hidden border border-white/10 transform transition-all animate-in fade-in zoom-in duration-300">
+      <div className="relative bg-[#08211d] w-full max-w-lg rounded-3xl shadow-2xl overflow-hidden border border-white/10 transform transition-all animate-in fade-in zoom-in duration-300">
         {/* Modal Header */}
-        <div className="bg-white/5 px-8 py-6 flex items-center justify-between border-b border-white/5">
+        <div className="bg-white/5 px-8 py-5 flex items-center justify-between border-b border-white/5">
           <div className="flex items-center gap-4">
             <div className="p-3 bg-tmt-emerald/10 border border-tmt-emerald/20 rounded-2xl shadow-lg shadow-tmt-emerald/10">
               <User className="w-5 h-5 text-tmt-emerald" />
@@ -193,6 +202,14 @@ const CreateStudentModal: React.FC<CreateStudentModalProps> = ({ isOpen, onClose
             </button>
           </div>
         </form>
+
+        {successMessage && (
+          <div className="absolute inset-0 flex items-center justify-center bg-black/60 backdrop-blur-md">
+            <div className="px-6 py-3 rounded-xl bg-emerald-600 text-white text-sm font-bold shadow-xl">
+              {successMessage}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

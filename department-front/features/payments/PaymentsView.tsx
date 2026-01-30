@@ -106,33 +106,33 @@ const PaymentsView = () => {
   return (
     <div className="flex flex-col h-full animate-in fade-in duration-500 relative text-white bg-[#030906]">
       {/* Header & Summary Section */}
-      <div className="sticky top-0 z-[60] px-4 md:px-6 lg:px-10 pt-0 pb-4 bg-[#030906]">
-        <div className="px-6 md:px-8 py-2 space-y-6">
+      <div className="sticky top-0 z-[60] px-4 pt-2 pb-2 bg-[#030906]">
+        <div className="space-y-4">
 
         {/* Summary Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4">
-          <div className="bg-[#030906] p-4 md:p-5 rounded-2xl md:rounded-[2rem] border border-white/10">
+          <div className="bg-[#030906] p-3 md:p-4 rounded-xl md:rounded-2xl border border-white/10">
               <p className="text-gray-500 text-[8px] md:text-[9px] uppercase tracking-[0.15em] md:tracking-[0.2em] font-black">Verified Revenue</p>
-              <p className="text-xl md:text-2xl font-black text-white mt-1 tracking-tight">
+              <p className="text-lg md:text-xl font-black text-white mt-1 tracking-tight">
                 ${transactions.filter(t => t.status === 'Verified').reduce((acc, curr) => acc + parseFloat(curr.amount.replace('$', '').replace(',', '')), 0).toLocaleString()}
               </p>
               {/* Mini Bar Graph */}
-              <div className="mt-3 pt-3 border-t border-white/5">
-                <div className="flex items-end gap-1 h-8">
+              <div className="mt-2 pt-2 border-t border-white/5">
+                <div className="flex items-end gap-1 h-5 md:h-6">
                   {[65, 45, 75, 55, 85, 70, 90, 60, 95, 80].map((height, i) => (
                     <div key={i} className="flex-1 bg-gradient-to-t from-tmt-emerald to-tmt-emerald/40 rounded-t transition-all hover:from-tmt-emerald hover:to-tmt-emerald/60" style={{height: `${height}%`}} />
                   ))}
                 </div>
               </div>
           </div>
-          <div className="bg-[#030906] p-4 md:p-5 rounded-2xl md:rounded-[2rem] border border-white/10">
+          <div className="bg-[#030906] p-3 md:p-4 rounded-xl md:rounded-2xl border border-white/10">
               <p className="text-gray-500 text-[8px] md:text-[9px] uppercase tracking-[0.15em] md:tracking-[0.2em] font-black">Held for Review</p>
-              <p className="text-xl md:text-2xl font-black text-white mt-1 tracking-tight">
+              <p className="text-lg md:text-xl font-black text-white mt-1 tracking-tight">
                 ${transactions.filter(t => t.status === 'Pending').reduce((acc, curr) => acc + parseFloat(curr.amount.replace('$', '').replace(',', '')), 0).toLocaleString()}
               </p>
               {/* Mini Line Graph */}
-              <div className="mt-3 pt-3 border-t border-white/5">
-                <div className="relative h-8">
+              <div className="mt-2 pt-2 border-t border-white/5">
+                <div className="relative h-5 md:h-6">
                   <svg className="w-full h-full" viewBox="0 0 100 50" preserveAspectRatio="none">
                     <defs>
                       <linearGradient id="pendingGradient" x1="0%" y1="0%" x2="0%" y2="100%">
@@ -146,14 +146,14 @@ const PaymentsView = () => {
                 </div>
               </div>
           </div>
-          <div className="bg-[#030906] p-4 md:p-5 rounded-2xl md:rounded-[2rem] border border-white/10 sm:col-span-2 lg:col-span-1">
+          <div className="bg-[#030906] p-3 md:p-4 rounded-xl md:rounded-2xl border border-white/10 sm:col-span-2 lg:col-span-1">
               <p className="text-gray-500 text-[8px] md:text-[9px] uppercase tracking-[0.15em] md:tracking-[0.2em] font-black">Failed Vol.</p>
-              <p className="text-xl md:text-2xl font-black text-white mt-1 tracking-tight">
+              <p className="text-lg md:text-xl font-black text-white mt-1 tracking-tight">
                 ${transactions.filter(t => t.status === 'Failed').reduce((acc, curr) => acc + parseFloat(curr.amount.replace('$', '').replace(',', '')), 0).toLocaleString()}
               </p>
               {/* Mini Dot Graph */}
-              <div className="mt-3 pt-3 border-t border-white/5">
-                <div className="flex items-center justify-between h-8">
+              <div className="mt-2 pt-2 border-t border-white/5">
+                <div className="flex items-center justify-between h-5 md:h-6">
                   {[30, 20, 45, 25, 50, 35, 40, 30, 55, 40, 60, 45].map((size, i) => (
                     <div key={i} className="relative" style={{height: `${size}%`}}>
                       <div className="absolute bottom-0 w-1.5 md:w-2 h-1.5 md:h-2 rounded-full bg-rose-500 opacity-60 hover:opacity-100 transition-opacity" style={{marginBottom: `${size}%`}} />
@@ -165,35 +165,24 @@ const PaymentsView = () => {
         </div>
         
         {/* Table Controls (Search etc) */}
-        <div className="pt-3 border-t border-white/10 flex flex-col gap-3 md:gap-4 lg:flex-row lg:items-center lg:justify-between">
-             <div className="relative flex-1 w-full group">
-                <Search className="absolute left-3 md:left-4 top-1/2 -translate-y-1/2 w-3.5 md:w-4 h-3.5 md:h-4 text-tmt-emerald" />
+        <div className="flex items-center gap-4 bg-white/[0.02] border border-white/5 p-0.5 rounded-lg">
+             <div className="relative flex-1">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-white/30" />
                 <input 
                     type="text" 
                     placeholder="Search by ID or Student..." 
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="w-full pl-9 md:pl-11 pr-3 md:pr-4 py-2.5 md:py-3.5 text-[11px] md:text-xs font-bold bg-white/5 border border-white/10 rounded-xl md:rounded-2xl text-white placeholder-gray-500 focus:outline-none focus:ring-4 focus:ring-[#1cdf8a]/30 focus:border-[#1cdf8a]/60 transition-all"
+                    className="w-full bg-transparent text-xs text-white/80 border-none focus:ring-0 pl-9 py-1.5 placeholder:text-white/20"
                 />
             </div>
-            <div className="flex flex-wrap gap-2 justify-start md:justify-end w-full lg:w-auto">
+            <div className="h-4 w-px bg-white/5" />
+            <div className="flex items-center gap-1 pr-1">
                 <button 
                   onClick={() => setIsFilterOpen(!isFilterOpen)}
-                  className={`p-2.5 md:p-3 bg-white/5 border border-white/10 rounded-lg md:rounded-xl hover:bg-white/10 text-white transition-all ${isFilterOpen ? 'bg-tmt-emerald/20 border-tmt-emerald' : ''}`}
+                  className={`px-2.5 py-1 rounded text-[10px] font-bold uppercase tracking-wider flex items-center gap-1.5 transition ${isFilterOpen ? 'bg-emerald-500/10 text-emerald-400' : 'text-white/40 hover:text-white/60'}`}
                 >
-              <Filter className="w-4 md:w-5 h-4 md:h-5" />
-            </button>
-            <button 
-              onClick={() => setIsModalOpen(true)}
-                  className="flex items-center gap-1.5 md:gap-2 px-3 md:px-5 py-2.5 md:py-3 bg-tmt-emerald text-white rounded-xl md:rounded-2xl text-[9px] md:text-[10px] font-black uppercase tracking-wider md:tracking-widest hover:bg-tmt-emerald/80 transition-all shadow-xl shadow-tmt-emerald/25 active:scale-95"
-            >
-              <Plus className="w-3.5 md:w-4 h-3.5 md:h-4" /> <span className="hidden xs:inline">Manual</span> Entry
-            </button>
-                <button 
-                  onClick={handleExportLedger}
-                  className="flex items-center gap-1.5 md:gap-2 px-3 md:px-5 py-2.5 md:py-3 bg-white/5 border border-white/10 rounded-xl md:rounded-2xl text-[9px] md:text-[10px] font-black uppercase tracking-wider md:tracking-widest text-white hover:bg-white/10 transition-all"
-                >
-              <Download className="w-3.5 md:w-4 h-3.5 md:h-4" /> <span className="hidden xs:inline">Export</span> <span className="hidden sm:inline">Ledger</span>
+              <Filter className="w-3 h-3" /> Filters
             </button>
           </div>
         </div>
@@ -248,27 +237,44 @@ const PaymentsView = () => {
         )}
 
         {/* Fixed Table Header - Hidden on Mobile */}
-        <div className="hidden lg:block bg-[#030906] border border-white/5 rounded-2xl -mx-6 md:-mx-8 mt-6 overflow-hidden">
+        <div className="hidden lg:block bg-[#030906] border border-white/5 rounded-2xl mt-2 overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full text-left min-w-[1000px]" style={{tableLayout: 'fixed'}}>
               <colgroup>
-                <col style={{width: '12%'}} />
-                <col style={{width: '16%'}} />
-                <col style={{width: '12%'}} />
-                <col style={{width: '14%'}} />
                 <col style={{width: '14%'}} />
                 <col style={{width: '18%'}} />
+                <col style={{width: '12%'}} />
+                <col style={{width: '12%'}} />
                 <col style={{width: '14%'}} />
+                <col style={{width: '15%'}} />
+                <col style={{width: '15%'}} />
               </colgroup>
-              <thead className="bg-black/40 backdrop-blur-md">
+              <thead>
                 <tr>
-                  <th className="px-10 py-8 text-xs font-black text-gray-400 uppercase tracking-widest">Transaction ID</th>
-                  <th className="px-10 py-8 text-xs font-black text-gray-400 uppercase tracking-widest">Identity</th>
-                  <th className="px-10 py-8 text-xs font-black text-gray-400 uppercase tracking-widest">Volume</th>
-                  <th className="px-10 py-8 text-xs font-black text-gray-400 uppercase tracking-widest">Method</th>
-                  <th className="px-10 py-8 text-xs font-black text-gray-400 uppercase tracking-widest">Pulse Time</th>
-                  <th className="px-10 py-8 text-xs font-black text-gray-400 uppercase tracking-widest">Status Management</th>
-                  <th className="px-10 py-8 text-xs font-black text-gray-400 uppercase tracking-widest text-right">Command</th>
+                  <th className="px-8 py-2 text-[10px] font-bold text-white/30 uppercase tracking-[0.2em]">Transaction ID</th>
+                  <th className="px-8 py-2 text-[10px] font-bold text-white/30 uppercase tracking-[0.2em]">Identity</th>
+                  <th className="px-8 py-2 text-[10px] font-bold text-white/30 uppercase tracking-[0.2em]">Volume</th>
+                  <th className="px-8 py-2 text-[10px] font-bold text-white/30 uppercase tracking-[0.2em]">Method</th>
+                  <th className="px-8 py-2 text-[10px] font-bold text-white/30 uppercase tracking-[0.2em]">Pulse Time</th>
+                  <th className="px-8 py-2 text-[10px] font-bold text-white/30 uppercase tracking-[0.2em]">Status</th>
+                  <th className="px-8 py-2 text-right">
+                            <div className="flex items-center justify-end gap-3">
+                                <button
+                                    onClick={handleExportLedger}
+                                    className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-[10px] font-medium text-white/50 hover:text-white transition whitespace-nowrap"
+                                >
+                                    <span className="hidden xl:inline">Export Ledger</span>
+                                    <span className="xl:hidden">Export</span>
+                                </button>
+                                <button
+                                    onClick={() => setIsModalOpen(true)}
+                                    className="flex items-center gap-2 px-4 py-2 rounded-lg bg-emerald-500 hover:bg-emerald-400 text-black text-[10px] font-bold uppercase tracking-wider transition shadow-lg shadow-emerald-900/20 whitespace-nowrap"
+                                >
+                                    <Plus className="w-3.5 h-3.5" />
+                                    <span>Manual Entry</span>
+                                </button>
+                            </div>
+                  </th>
                 </tr>
               </thead>
             </table>
@@ -279,89 +285,87 @@ const PaymentsView = () => {
 
       {/* SCROLLABLE TABLE BODY - Desktop */}
       <div className="hidden lg:block relative flex-1 min-h-0 bg-[#030906]">
-        <div className="h-full pb-16 overflow-y-auto bg-[#030906]">
-          <div className="overflow-x-auto">
+        <div className="h-full pb-4 overflow-y-auto bg-[#030906]">
+          <div className="overflow-x-auto px-4">
             <table className="w-full text-left border-separate border-spacing-0 min-w-[1000px]" style={{tableLayout: 'fixed'}}>
             <colgroup>
-              <col style={{width: '12%'}} />
-              <col style={{width: '16%'}} />
-              <col style={{width: '12%'}} />
-              <col style={{width: '14%'}} />
               <col style={{width: '14%'}} />
               <col style={{width: '18%'}} />
+              <col style={{width: '12%'}} />
+              <col style={{width: '12%'}} />
               <col style={{width: '14%'}} />
+              <col style={{width: '15%'}} />
+              <col style={{width: '15%'}} />
             </colgroup>
             <tbody className="divide-y divide-white/5">
               {filteredTransactions.map((trx) => (
                 <tr 
                   key={trx.id} 
-                  className="group hover:bg-white/[0.03] transition-all"
+                  className="group transition-colors hover:bg-white/[0.02]"
                 >
-                  <td className="px-10 py-6">
-                    <div className="font-mono text-[10px] text-gray-500 font-black tracking-widest">{trx.id}</div>
+                  <td className="px-8 py-4">
+                    <div className="font-mono text-[10px] text-emerald-300/60 font-bold tracking-widest">{trx.id}</div>
                   </td>
-                  <td className="px-10 py-6">
-                    <div className="font-black text-white text-sm uppercase tracking-tight group-hover:text-tmt-emerald transition-colors">{trx.student}</div>
+                  <td className="px-8 py-4">
+                    <div className="font-bold text-white text-xs tracking-tight">{trx.student}</div>
                   </td>
-                  <td className="px-10 py-6">
-                    <div className="text-white font-black text-sm">{trx.amount}</div>
+                  <td className="px-8 py-4">
+                    <div className="text-[10px] font-medium text-white/60">{trx.amount}</div>
                   </td>
-                  <td className="px-10 py-6">
-                    <span className="bg-white/10 border border-white/10 px-2.5 py-1 rounded-lg text-[10px] text-gray-200 font-black uppercase tracking-widest whitespace-nowrap">{trx.method}</span>
+                  <td className="px-8 py-4">
+                    <span className="bg-white/5 border border-white/10 px-2 py-0.5 rounded text-[10px] text-white/60 font-bold uppercase tracking-wider whitespace-nowrap">{trx.method}</span>
                   </td>
-                  <td className="px-10 py-6">
-                    <div className="text-gray-500 text-[10px] font-black uppercase tracking-widest">{trx.date}</div>
+                  <td className="px-8 py-4">
+                    <div className="text-[10px] font-medium text-white/40">{trx.date}</div>
                   </td>
-                  <td className="px-10 py-6">
-                    <div className="relative inline-block w-48">
+                  <td className="px-8 py-4">
+                    <div className="relative inline-block w-32">
                       <select 
                         value={trx.status}
                         onChange={(e) => handleUpdateStatus(trx.id, e.target.value)}
-                        className={`w-full appearance-none px-3 py-1.5 rounded-xl text-[9px] font-black uppercase tracking-widest border transition-all cursor-pointer focus:outline-none
-                          ${trx.status === 'Verified' ? 'bg-tmt-emerald/20 text-tmt-emerald border-tmt-emerald/30' : 
-                            trx.status === 'Pending' ? 'bg-amber-500/20 text-amber-500 border-amber-500/30' : 
-                            'bg-rose-500/20 text-rose-500 border-rose-500/30'}`}
+                        className={`w-full appearance-none px-2 py-1 rounded-lg text-[10px] font-bold uppercase tracking-wider border transition-all cursor-pointer focus:outline-none
+                          ${trx.status === 'Verified' ? 'bg-emerald-500/10 text-emerald-300 border-emerald-400/30' : 
+                            trx.status === 'Pending' ? 'bg-amber-500/10 text-amber-300 border-amber-400/30' : 
+                            'bg-white/5 text-white/60 border-white/15'}`}
                       >
                         <option value="Verified">Verified</option>
                         <option value="Pending">Pending</option>
                         <option value="Failed">Failed</option>
                       </select>
-                      <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none opacity-50 text-white">
+                      <div className="absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none opacity-50 text-white">
                         <ChevronDown className="w-3 h-3" />
                       </div>
                     </div>
                   </td>
-                  <td className="px-10 py-6 text-right">
-                    <div className="flex justify-end gap-3">
+                  <td className="px-8 py-4 text-right">
+                    <div className="flex justify-end gap-2">
                       <button 
                         onClick={() => setSelectedTransaction(trx)}
-                        className="p-3 bg-white/5 border border-white/10 rounded-xl hover:bg-tmt-emerald hover:text-white transition-all shadow-lg"
+                        className="p-1.5 hover:bg-white/10 rounded-md text-white/40 hover:text-white transition"
                         title="View Details"
                       >
-                        <ExternalLink className="w-4 h-4" />
+                        <ExternalLink className="w-3.5 h-3.5" />
                       </button>
                       <button 
-                        className="p-3 bg-white/5 border border-white/10 rounded-xl hover:bg-rose-500 hover:text-white transition-all shadow-lg"
+                        className="p-1.5 hover:bg-white/10 rounded-md text-white/40 hover:text-rose-500 transition"
                         onClick={() => setTransactionToDelete(trx)}
                         title="Void Transaction"
                       >
-                        <Trash2 className="w-4 h-4" />
+                        <Trash2 className="w-3.5 h-3.5" />
                       </button>
                     </div>
                   </td>
                 </tr>
               ))}
+              {filteredTransactions.length === 0 && (
+                <tr>
+                  <td colSpan={7} className="px-10 py-12 text-center text-white/20">
+                    <p className="text-xs font-bold uppercase tracking-widest">No matching ledger entries</p>
+                  </td>
+                </tr>
+              )}
             </tbody>
           </table>
-
-          {filteredTransactions.length === 0 && (
-            <div className="flex flex-col items-center justify-center py-24 bg-[#030906] rounded-[2.5rem] mt-8 mx-10 border border-white/10">
-              <div className="w-16 h-16 bg-white/5 border border-white/10 rounded-[1.5rem] flex items-center justify-center mb-4 text-gray-600">
-                <CreditCard className="w-8 h-8" />
-              </div>
-              <p className="text-[10px] font-black text-gray-500 uppercase tracking-widest">No matching ledger entries</p>
-            </div>
-          )}
           </div>
         </div>
       </div>
