@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Services\AuditLogService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -65,6 +66,14 @@ class TransactionController extends Controller
 
         $transaction = DB::table('transactions')->find($id);
 
+        // Log the payment creation
+        AuditLogService::logPaymentAction('created', [
+            'student_name' => $validated['student_name'],
+            'amount' => $validated['amount'],
+            'method' => $validated['method'],
+            'status' => $validated['status'],
+        ]);
+
         return response()->json([
             'success' => true,
             'message' => 'Transaction created successfully',
@@ -81,6 +90,8 @@ class TransactionController extends Controller
             'status' => 'required|in:Verified,Pending,Failed'
         ]);
 
+        $oldTransaction = DB::table('transactions')->find($id);
+
         DB::table('transactions')
             ->where('id', $id)
             ->update([
@@ -89,6 +100,14 @@ class TransactionController extends Controller
             ]);
 
         $transaction = DB::table('transactions')->find($id);
+
+        // Log the payment status update
+        AuditLogService::logPaymentAction('status_updated', [
+            'student_name' => $transaction->student_name ?? 'Unknown',
+            'amount' => $transaction->amount ?? 0,
+            'status' => $validated['status'],
+            'previous_status' => $oldTransaction->status ?? 'Unknown',
+        ]);
 
         return response()->json([
             'success' => true,
@@ -102,6 +121,16 @@ class TransactionController extends Controller
      */
     public function destroy($id)
     {
+        $transaction = DB::table('transactions')->find($id);
+        
+        // Log the payment deletion
+        if ($transaction) {
+            AuditLogService::logPaymentAction('deleted', [
+                'student_name' => $transaction->student_name ?? 'Unknown',
+                'amount' => $transaction->amount ?? 0,
+            ]);
+        }
+
         DB::table('transactions')->where('id', $id)->delete();
 
         return response()->json([

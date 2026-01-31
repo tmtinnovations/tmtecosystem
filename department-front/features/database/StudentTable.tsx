@@ -17,7 +17,8 @@ import {
 interface StudentTableProps {
   students: Student[];
   onSelectStudent: (student: Student) => void;
-  onDeleteStudent: (id: string) => void;
+  onEditStudent: (student: Student) => void;
+  onDeleteStudent: (student: Student) => void;
   onUpdateStudent?: (id: string, updates: Partial<Student>) => void;
   selectedStudentId?: string;
   onAddClick: () => void;
@@ -26,6 +27,7 @@ interface StudentTableProps {
 const StudentTable: React.FC<StudentTableProps> = ({
   students,
   onSelectStudent,
+  onEditStudent,
   onDeleteStudent,
   onUpdateStudent,
   selectedStudentId,
@@ -36,7 +38,6 @@ const StudentTable: React.FC<StudentTableProps> = ({
   const [filterOnboarding, setFilterOnboarding] = useState<OnboardingStatus | 'All'>('All');
   const [filterDiscord, setFilterDiscord] = useState<'All' | 'Assigned' | 'Not Assigned'>('All');
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc' | null>(null);
-  const [studentToDelete, setStudentToDelete] = useState<Student | null>(null);
   const [showFilters, setShowFilters] = useState(false);
 
   const toggleSort = () => {
@@ -262,9 +263,22 @@ const StudentTable: React.FC<StudentTableProps> = ({
                         </div>
                     </td>
                     <td className="px-8 py-4 text-right">
-                       <button onClick={(e) => { e.stopPropagation(); onSelectStudent(student); }} className="p-1.5 hover:bg-white/10 rounded-md text-white/40 hover:text-white transition">
-                            <Pencil className="w-3.5 h-3.5" />
-                       </button>
+                       <div className="flex items-center justify-end gap-1">
+                         <button 
+                           onClick={(e) => { e.stopPropagation(); onEditStudent(student); }} 
+                           className="p-2 hover:bg-emerald-500/10 rounded-lg text-white/40 hover:text-emerald-400 transition-all group/btn"
+                           title="Edit Student"
+                         >
+                           <Pencil className="w-3.5 h-3.5 group-hover/btn:scale-110 transition-transform" />
+                         </button>
+                         <button 
+                           onClick={(e) => { e.stopPropagation(); onDeleteStudent(student); }} 
+                           className="p-2 hover:bg-rose-500/10 rounded-lg text-white/40 hover:text-rose-400 transition-all group/btn"
+                           title="Delete Student"
+                         >
+                           <Trash2 className="w-3.5 h-3.5 group-hover/btn:scale-110 transition-transform" />
+                         </button>
+                       </div>
                     </td>
                   </tr>
                 );
@@ -293,23 +307,23 @@ const StudentTable: React.FC<StudentTableProps> = ({
                       </div>
                       <span className={`text-[10px] font-bold px-2 py-0.5 rounded ${onboardingBadgeClass(student.onboardingStatus)}`}>{student.onboardingStatus}</span>
                   </div>
+                  <div className="flex items-center gap-2 mt-3 pt-3 border-t border-white/5">
+                    <button 
+                      onClick={(e) => { e.stopPropagation(); onEditStudent(student); }}
+                      className="flex-1 py-2 rounded-lg bg-emerald-500/10 text-emerald-400 text-xs font-bold hover:bg-emerald-500/20 transition-colors flex items-center justify-center gap-1.5"
+                    >
+                      <Pencil className="w-3 h-3" /> Edit
+                    </button>
+                    <button 
+                      onClick={(e) => { e.stopPropagation(); onDeleteStudent(student); }}
+                      className="flex-1 py-2 rounded-lg bg-rose-500/10 text-rose-400 text-xs font-bold hover:bg-rose-500/20 transition-colors flex items-center justify-center gap-1.5"
+                    >
+                      <Trash2 className="w-3 h-3" /> Delete
+                    </button>
+                  </div>
               </div>
            ))}
       </div>
-
-      {/* Delete Modal - Keeping original logic */}
-      {studentToDelete && (
-         <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-black/80 backdrop-blur-sm">
-             <div className="bg-[#0A0A0A] border border-white/10 p-6 rounded-2xl max-w-sm w-full shadow-2xl">
-                 <h3 className="text-lg font-bold text-white mb-2">Delete Student?</h3>
-                 <p className="text-sm text-white/60 mb-6">Are you sure you want to delete {studentToDelete.name}? This action cannot be undone.</p>
-                 <div className="flex gap-3">
-                     <button onClick={() => setStudentToDelete(null)} className="flex-1 py-2 rounded-lg bg-white/5 hover:bg-white/10 text-xs font-bold text-white transition">Cancel</button>
-                     <button onClick={() => { onDeleteStudent(studentToDelete.id); setStudentToDelete(null); }} className="flex-1 py-2 rounded-lg bg-rose-500 hover:bg-rose-600 text-xs font-bold text-white transition">Delete</button>
-                 </div>
-             </div>
-         </div>
-      )}
     </div>
   );
 };

@@ -136,6 +136,84 @@ class ApiClient {
       body: JSON.stringify({ ids, ...data }),
     });
   }
+
+  // System Logs API methods
+  async getLogs(params: {
+    search?: string;
+    level?: string;
+    module?: string;
+  } = {}) {
+    const queryString = new URLSearchParams();
+    Object.entries(params).forEach(([key, value]) => {
+      if (value !== undefined && value !== null && value !== '') {
+        queryString.append(key, value.toString());
+      }
+    });
+    return this.request(`/logs?${queryString.toString()}`);
+  }
+
+  async createLog(data: {
+    level: 'INFO' | 'SUCCESS' | 'WARNING' | 'ERROR';
+    module: string;
+    message: string;
+    context?: Record<string, any>;
+    student_id?: number;
+  }) {
+    return this.request('/logs', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  }
+
+  async clearOldLogs() {
+    return this.request('/logs/clear', {
+      method: 'DELETE',
+    });
+  }
+
+  async getLogStats() {
+    return this.request('/logs/stats');
+  }
+
+  // Transactions/Payments API methods
+  async getTransactions(params: {
+    search?: string;
+    status?: string;
+    method?: string;
+  } = {}) {
+    const queryString = new URLSearchParams();
+    Object.entries(params).forEach(([key, value]) => {
+      if (value !== undefined && value !== null && value !== '') {
+        queryString.append(key, value.toString());
+      }
+    });
+    return this.request(`/transactions?${queryString.toString()}`);
+  }
+
+  async createTransaction(data: {
+    student_name: string;
+    amount: number;
+    method: 'Stripe' | 'PayPal' | 'Bank Transfer' | 'Crypto';
+    status: 'Verified' | 'Pending' | 'Failed';
+  }) {
+    return this.request('/transactions', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  }
+
+  async updateTransactionStatus(id: string, status: 'Verified' | 'Pending' | 'Failed') {
+    return this.request(`/transactions/${id}/status`, {
+      method: 'PATCH',
+      body: JSON.stringify({ status }),
+    });
+  }
+
+  async deleteTransaction(id: string) {
+    return this.request(`/transactions/${id}`, {
+      method: 'DELETE',
+    });
+  }
 }
 
 // Export singleton instance

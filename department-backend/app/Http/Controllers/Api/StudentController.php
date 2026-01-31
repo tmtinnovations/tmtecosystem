@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Student;
 use App\Models\TimelineStep;
+use App\Services\AuditLogService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -123,6 +124,13 @@ class StudentController extends Controller
 
             $student->load(['program', 'timelineSteps']);
 
+            // Log the student creation
+            AuditLogService::logStudentAction('created', [
+                'name' => $student->name,
+                'email' => $student->email,
+                'program_id' => $student->program_id,
+            ], $student->id);
+
             return response()->json([
                 'success' => true,
                 'message' => 'Student created successfully',
@@ -198,6 +206,8 @@ class StudentController extends Controller
         }
 
         try {
+            $oldData = $student->toArray();
+            
             $student->update($request->only([
                 'name',
                 'email',
@@ -212,6 +222,30 @@ class StudentController extends Controller
             ]));
 
             $student->load(['program', 'timelineSteps']);
+
+            // Log the student update
+            AuditLogService::logStudentAction('updated', [
+                'name' => $student->name,
+                'email' => $student->email,
+                'changes' => array_diff_assoc($student->toArray(), $oldData),
+            ], $student->id);
+
+            // Log specific status changes
+            if ($request->has('payment_status') && $oldData['payment_status'] !== $request->payment_status) {
+                AuditLogService::logStudentAction('payment_updated', [
+                    'name' => $student->name,
+                    'status' => $request->payment_status,
+                    'previous_status' => $oldData['payment_status'],
+                ], $student->id);
+            }
+
+            if ($request->has('onboarding_status') && $oldData['onboarding_status'] !== $request->onboarding_status) {
+                AuditLogService::logStudentAction('onboarding_updated', [
+                    'name' => $student->name,
+                    'status' => $request->onboarding_status,
+                    'previous_status' => $oldData['onboarding_status'],
+                ], $student->id);
+            }
 
             return response()->json([
                 'success' => true,
@@ -243,7 +277,16 @@ class StudentController extends Controller
         }
 
         try {
+            $studentName = $student->name;
+            $studentEmail = $student->email;
+            
             $student->delete(); // Soft delete
+
+            // Log the student deletion
+            AuditLogService::logStudentAction('deleted', [
+                'name' => $studentName,
+                'email' => $studentEmail,
+            ]);
 
             return response()->json([
                 'success' => true,

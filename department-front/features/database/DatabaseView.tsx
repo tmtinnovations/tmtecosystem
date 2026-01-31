@@ -3,6 +3,9 @@ import React, { useEffect, useState } from 'react';
 import { CheckCircle, X } from 'lucide-react';
 import StudentTable from './StudentTable';
 import CreateStudentModalNew from '../../components/CreateStudentModalNew';
+import EditStudentModal from '../../components/EditStudentModal';
+import DeleteConfirmModal from '../../components/DeleteConfirmModal';
+import SuccessNotification from '../../components/SuccessNotification';
 import { Student } from '../../types';
 
 interface DatabaseViewProps {
@@ -29,7 +32,21 @@ const DatabaseView: React.FC<DatabaseViewProps> = ({
   onUpdateStudent
 }) => {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
-  const [showSuccess, setShowSuccess] = useState(false);
+  const [editingStudent, setEditingStudent] = useState<Student | null>(null);
+  const [deletingStudent, setDeletingStudent] = useState<Student | null>(null);
+  const [isDeleteLoading, setIsDeleteLoading] = useState(false);
+  
+  // Success notification state
+  const [notification, setNotification] = useState<{
+    isVisible: boolean;
+    type: 'success' | 'error' | 'warning';
+    title: string;
+    message: string;
+  }>({ isVisible: false, type: 'success', title: '', message: '' });
+
+  const showNotification = (type: 'success' | 'error' | 'warning', title: string, message: string) => {
+    setNotification({ isVisible: true, type, title, message });
+  };
 
   const handleSave = async (studentData: {
     name: string;
@@ -39,51 +56,81 @@ const DatabaseView: React.FC<DatabaseViewProps> = ({
     due_date: string;
   }) => {
     await onAddStudent(studentData);
-    setShowSuccess(true);
     setIsCreateModalOpen(false);
+    showNotification('success', 'Student Added!', `${studentData.name} has been successfully enrolled.`);
   };
 
-  useEffect(() => {
-    if (!showSuccess) return;
-    const timer = setTimeout(() => setShowSuccess(false), 3200);
-    return () => clearTimeout(timer);
-  }, [showSuccess]);
+  const handleEditStudent = (student: Student) => {
+    setEditingStudent(student);
+  };
+
+  const handleUpdateStudent = async (id: string, updates: Partial<Student>) => {
+    await onUpdateStudent(id, updates);
+    setEditingStudent(null);
+    showNotification('success', 'Updated Successfully!', 'Student information has been saved.');
+  };
+
+  const handleDeleteClick = (student: Student) => {
+    setDeletingStudent(student);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!deletingStudent) return;
+    setIsDeleteLoading(true);
+    try {
+      await onDeleteStudent(deletingStudent.id);
+      showNotification('warning', 'Record Deleted', `${deletingStudent.name} has been removed from the database.`);
+      setDeletingStudent(null);
+    } catch (error) {
+      showNotification('error', 'Delete Failed', 'Could not delete the student record.');
+    } finally {
+      setIsDeleteLoading(false);
+    }
+  };
 
   return (
     <div className="flex-1 flex flex-col min-h-0 animate-in fade-in duration-500 px-4 md:px-6 lg:px-10">
-      {showSuccess && (
-        <div className="fixed inset-0 z-50 flex items-start justify-center pointer-events-none">
-          <div className="mt-12 flex items-start gap-3 px-5 py-4 rounded-2xl bg-gradient-to-br from-emerald-500 to-emerald-400 text-white shadow-[0_20px_60px_rgba(16,185,129,0.45)] border border-white/10 animate-in fade-in slide-in-from-top-4 pointer-events-auto">
-            <div className="w-11 h-11 rounded-xl bg-white/15 flex items-center justify-center">
-              <CheckCircle className="w-5 h-5" />
-            </div>
-            <div className="pr-4">
-              <p className="text-sm font-semibold">Added successfully</p>
-              <p className="text-xs text-emerald-50/90">Record saved and synced.</p>
-            </div>
-            <button 
-              aria-label="Close success toast"
-              className="p-2 rounded-lg hover:bg-white/10 transition-colors"
-              onClick={() => setShowSuccess(false)}
-            >
-              <X className="w-4 h-4" />
-            </button>
-          </div>
-        </div>
-      )}
+      {/* Success/Error Notification */}
+      <SuccessNotification
+        isVisible={notification.isVisible}
+        type={notification.type}
+        title={notification.title}
+        message={notification.message}
+        onClose={() => setNotification(prev => ({ ...prev, isVisible: false }))}
+      />
+
       <StudentTable 
         students={students} 
         onSelectStudent={onSelectStudent}
-        onDeleteStudent={onDeleteStudent}
+        onEditStudent={handleEditStudent}
+        onDeleteStudent={handleDeleteClick}
         onUpdateStudent={onUpdateStudent}
         selectedStudentId={selectedStudentId}
         onAddClick={() => setIsCreateModalOpen(true)}
       />
       
+      {/* Create Modal */}
       <CreateStudentModalNew 
         isOpen={isCreateModalOpen} 
         onClose={() => setIsCreateModalOpen(false)}
         onSave={handleSave}
+      />
+
+      {/* Edit Modal */}
+      <EditStudentModal
+        isOpen={!!editingStudent}
+        student={editingStudent}
+        onClose={() => setEditingStudent(null)}
+        onSave={handleUpdateStudent}
+      />
+
+      {/* Delete Confirmation Modal */}
+      <DeleteConfirmModal
+        isOpen={!!deletingStudent}
+        student={deletingStudent}
+        isLoading={isDeleteLoading}
+        onClose={() => setDeletingStudent(null)}
+        onConfirm={handleConfirmDelete}
       />
     </div>
   );

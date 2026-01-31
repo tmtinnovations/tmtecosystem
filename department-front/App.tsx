@@ -21,6 +21,7 @@ const App: React.FC = () => {
   const [selectedStudent, setSelectedStudent] = useState<Student | null>(null);
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
   // Load students from API
@@ -39,7 +40,7 @@ const App: React.FC = () => {
       const response = await apiClient.getStudents();
       if (response.success && response.data) {
         // Handle paginated response
-        const studentsData = response.data.data || response.data;
+        const studentsData = (response.data as any).data || response.data;
         // Transform API data to match frontend Student interface
         const transformedStudents = Array.isArray(studentsData) ? studentsData.map((s: any) => ({
           ...s,
@@ -81,7 +82,7 @@ const App: React.FC = () => {
     try {
       const response = await apiClient.createStudent(studentData);
       if (response.success && response.data) {
-        const newStudent = response.data;
+        const newStudent = response.data as Student;
         setStudents([newStudent, ...students]);
         setSelectedStudent(newStudent);
         
@@ -210,7 +211,8 @@ const App: React.FC = () => {
             students={students} 
             onUpdateStatus={handleUpdateOnboardingStatus}
             onDeleteStudent={handleDeleteStudent}
-            onAddClick={() => setActiveNav('database')}
+            onAddStudent={handleAddStudent}
+            onUpdateStudent={handleUpdateStudent}
           />
         );
       case 'roles':
@@ -239,11 +241,15 @@ const App: React.FC = () => {
       )}
       
       {/* Sidebar Container */}
-      <div className={`fixed inset-y-0 left-0 z-[70] transform transition-all duration-500 md:relative md:translate-x-0 shrink-0 ${isMobileMenuOpen ? 'translate-x-0 shadow-2xl' : '-translate-x-full'}`}>
+      <div className={`fixed inset-y-0 left-0 z-[70] transform transition-all duration-500 md:relative md:translate-x-0 shrink-0 ${isMobileMenuOpen ? 'translate-x-0 shadow-2xl' : '-translate-x-full md:translate-x-0'}`}>
         <Sidebar 
           activeItem={activeNav} 
-          onNavigate={(item) => { setActiveNav(item); setIsMobileMenuOpen(false); }} 
+          onNavigate={(item) => { setActiveNav(item); setIsMobileMenuOpen(false); }}
           onLogout={handleLogout}
+          isCollapsed={isSidebarCollapsed}
+          onToggleCollapse={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
+          isMobileOpen={isMobileMenuOpen}
+          onCloseMobile={() => setIsMobileMenuOpen(false)}
         />
       </div>
 

@@ -2,6 +2,7 @@
 import React, { useMemo } from 'react';
 import { CreditCard, Users, Activity, AlertCircle, BarChart3, TrendingUp, TrendingDown, Database, FileText, UserCog, CheckCircle, Clock, XCircle, Shield, Bell, ArrowUpRight, Circle, Sparkles } from 'lucide-react';
 import { Student, Notification } from '../../types';
+import DataCalendar from '../../components/DataCalendar';
 
 interface DashboardViewProps {
   students: Student[];
@@ -244,9 +245,29 @@ const DashboardView: React.FC<DashboardViewProps> = ({
                       s.paymentStatus === 'Pending' ? 'bg-amber-400' : 'bg-rose-400'
                     }`} />
                   </div>
-                )) : (
-                  <div className="col-span-2 text-center py-8 text-gray-500 text-sm">No students found</div>
-                )}
+                )) : [
+                  { id: '1', name: 'Alex Chen', program: { name: 'TMT Premium' }, paymentStatus: 'Paid' },
+                  { id: '2', name: 'Sarah Kim', program: { name: 'Get Funded' }, paymentStatus: 'Pending' },
+                  { id: '3', name: 'Mike Johnson', program: { name: 'TAT' }, paymentStatus: 'Paid' },
+                  { id: '4', name: 'Emma Wilson', program: { name: 'TMT Basic' }, paymentStatus: 'Pending' }
+                ].map(s => (
+                  <div 
+                    key={s.id} 
+                    className="flex items-center gap-3 p-3 rounded-xl bg-white/[0.03] hover:bg-white/[0.06] border border-white/[0.05] hover:border-white/20 cursor-pointer transition-all group"
+                  >
+                    <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-blue-500/30 to-blue-600/20 flex items-center justify-center text-blue-200 text-sm font-semibold shrink-0">
+                      {s.name.charAt(0)}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-semibold text-white truncate group-hover:text-blue-300 transition-colors">{s.name}</p>
+                      <p className="text-xs text-gray-500 truncate">{s.program?.name || 'No Program'}</p>
+                    </div>
+                    <div className={`w-2 h-2 rounded-full shrink-0 ${
+                      s.paymentStatus === 'Paid' ? 'bg-emerald-400' :
+                      s.paymentStatus === 'Pending' ? 'bg-amber-400' : 'bg-rose-400'
+                    }`} />
+                  </div>
+                ))}
               </div>
             </div>
           </div>
@@ -280,83 +301,109 @@ const DashboardView: React.FC<DashboardViewProps> = ({
               </div>
             </div>
 
-            {/* Attention Required */}
-            <div className="bg-gradient-to-br from-rose-500/[0.03] to-white/[0.01] backdrop-blur-sm rounded-2xl p-5 border border-rose-500/10">
-              <div className="flex items-center gap-3 mb-4">
-                <AlertCircle className="w-5 h-5 text-rose-400" />
-                <h3 className="text-sm font-semibold text-white">Needs Attention</h3>
-              </div>
-              {criticalStudents.length > 0 ? (
-                <div className="space-y-3">
-                  {criticalStudents.map(s => (
-                    <div 
-                      key={s.id} 
-                      onClick={() => onSelectStudent(s)}
-                      className="flex items-center gap-3 p-3 rounded-lg bg-rose-500/5 hover:bg-rose-500/10 border border-rose-500/15 cursor-pointer transition-all"
-                    >
-                      <div className="w-8 h-8 rounded bg-rose-500/20 flex items-center justify-center text-rose-200 text-sm font-semibold">
-                        {s.name.charAt(0)}
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <p className="text-sm font-semibold text-white truncate">{s.name}</p>
-                        <p className="text-xs text-rose-300">{s.paymentStatus === 'Failed' ? 'Payment failed' : 'Pending setup'}</p>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <div className="flex flex-col items-center py-6 text-center">
-                  <Sparkles className="w-7 h-7 text-emerald-400 mb-2" />
-                  <p className="text-sm font-semibold text-white">All Clear</p>
-                  <p className="text-xs text-gray-500">No issues detected</p>
-                </div>
-              )}
-            </div>
+            {/* Activity Calendar */}
+            <DataCalendar students={students} />
+          </div>
+        </div>
 
-            {/* Activity Feed */}
-            <div className="bg-gradient-to-br from-white/[0.03] to-white/[0.01] backdrop-blur-sm rounded-2xl p-5 border border-white/[0.06]">
-              <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center gap-3">
-                  <Bell className="w-5 h-5 text-amber-400" />
-                  <h3 className="text-sm font-semibold text-white">Activity</h3>
-                </div>
-                <span className="text-xs text-gray-500">{notifications.length} events</span>
-              </div>
-              <div className="space-y-2">
-                {notifications.length > 0 ? notifications.slice(0, 4).map(n => (
-                  <div key={n.id} className="flex items-start gap-3 p-3 rounded-xl hover:bg-white/[0.03] transition-colors">
-                    <div className={`w-2 h-2 rounded-full mt-1.5 shrink-0 ${
-                      n.type === 'success' ? 'bg-emerald-400' :
-                      n.type === 'warning' ? 'bg-amber-400' :
-                      n.type === 'error' ? 'bg-rose-400' : 'bg-blue-400'
-                    }`} />
+        {/* Bottom Row - Full Width Widgets */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+          {/* Attention Required */}
+          <div className="bg-gradient-to-br from-rose-500/[0.03] to-white/[0.01] backdrop-blur-sm rounded-2xl p-5 border border-rose-500/10">
+            <div className="flex items-center gap-3 mb-4">
+              <AlertCircle className="w-5 h-5 text-rose-400" />
+              <h3 className="text-sm font-semibold text-white">Needs Attention</h3>
+            </div>
+            {criticalStudents.length > 0 ? (
+              <div className="space-y-3">
+                {criticalStudents.map(s => (
+                  <div 
+                    key={s.id} 
+                    onClick={() => onSelectStudent(s)}
+                    className="flex items-center gap-3 p-3 rounded-lg bg-rose-500/5 hover:bg-rose-500/10 border border-rose-500/15 cursor-pointer transition-all"
+                  >
+                    <div className="w-8 h-8 rounded bg-rose-500/20 flex items-center justify-center text-rose-200 text-sm font-semibold">
+                      {s.name.charAt(0)}
+                    </div>
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm text-gray-200 leading-relaxed">{n.message}</p>
-                      <p className="text-xs text-gray-500 mt-1">{n.time}</p>
+                      <p className="text-sm font-semibold text-white truncate">{s.name}</p>
+                      <p className="text-xs text-rose-300">{s.paymentStatus === 'Failed' ? 'Payment failed' : 'Pending setup'}</p>
                     </div>
                   </div>
-                )) : (
-                  <p className="text-center py-6 text-gray-500 text-sm">No recent activity</p>
-                )}
+                ))}
               </div>
-            </div>
+            ) : (
+              <div className="space-y-3">
+                {[
+                  { id: '1', name: 'Payment Reminders', issue: 'Due in 2 days', type: 'warning' },
+                  { id: '2', name: 'Discord Sync', issue: 'Pending review', type: 'info' },
+                  { id: '3', name: 'Weekly Reports', issue: 'Ready to generate', type: 'success' }
+                ].map(item => (
+                  <div 
+                    key={item.id}
+                    className="flex items-center gap-3 p-3 rounded-lg bg-amber-500/5 hover:bg-amber-500/10 border border-amber-500/15 cursor-pointer transition-all"
+                  >
+                    <div className={`w-8 h-8 rounded flex items-center justify-center text-sm font-semibold ${
+                      item.type === 'warning' ? 'bg-amber-500/20 text-amber-200' :
+                      item.type === 'info' ? 'bg-blue-500/20 text-blue-200' :
+                      'bg-emerald-500/20 text-emerald-200'
+                    }`}>
+                      {item.name.charAt(0)}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-semibold text-white truncate">{item.name}</p>
+                      <p className={`text-xs truncate ${
+                        item.type === 'warning' ? 'text-amber-300' :
+                        item.type === 'info' ? 'text-blue-300' :
+                        'text-emerald-300'
+                      }`}>{item.issue}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
 
-            {/* System Status */}
-            <div className="grid grid-cols-2 gap-3">
-              <div className="p-4 rounded-xl bg-gradient-to-br from-emerald-500/10 to-transparent border border-emerald-500/10">
-                <div className="flex items-center gap-2 mb-2">
-                  <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                  <span className="text-xs text-gray-500 uppercase">Status</span>
-                </div>
-                <p className="text-sm font-semibold text-emerald-300">Online</p>
+          {/* Activity Feed */}
+          <div className="bg-gradient-to-br from-white/[0.03] to-white/[0.01] backdrop-blur-sm rounded-2xl p-5 border border-white/[0.06]">
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-3">
+                <Bell className="w-5 h-5 text-amber-400" />
+                <h3 className="text-sm font-semibold text-white">Activity</h3>
               </div>
-              <div className="p-4 rounded-xl bg-gradient-to-br from-blue-500/10 to-transparent border border-blue-500/10">
-                <div className="flex items-center gap-2 mb-2">
-                  <Database className="w-3 h-3 text-blue-300" />
-                  <span className="text-xs text-gray-500 uppercase">Records</span>
+              <span className="text-xs text-gray-500">{notifications.length > 0 ? notifications.length : 4} events</span>
+            </div>
+            <div className="space-y-2">
+              {notifications.length > 0 ? notifications.slice(0, 4).map(n => (
+                <div key={n.id} className="flex items-start gap-3 p-3 rounded-xl hover:bg-white/[0.03] transition-colors">
+                  <div className={`w-2 h-2 rounded-full mt-1.5 shrink-0 ${
+                    n.type === 'success' ? 'bg-emerald-400' :
+                    n.type === 'warning' ? 'bg-amber-400' :
+                    n.type === 'error' ? 'bg-rose-400' : 'bg-blue-400'
+                  }`} />
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm text-gray-200 leading-relaxed">{n.message}</p>
+                    <p className="text-xs text-gray-500 mt-1">{n.time}</p>
+                  </div>
                 </div>
-                <p className="text-sm font-semibold text-white">{students.length}</p>
-              </div>
+              )) : [
+                { id: '1', message: 'System: Database sync completed successfully', time: '2 minutes ago', type: 'success' },
+                { id: '2', message: 'Payment: 3 new transactions processed', time: '15 minutes ago', type: 'info' },
+                { id: '3', message: 'Discord: Role assignments updated', time: '1 hour ago', type: 'success' },
+                { id: '4', message: 'Backup: Daily backup completed', time: '3 hours ago', type: 'info' }
+              ].map(n => (
+                <div key={n.id} className="flex items-start gap-3 p-3 rounded-xl hover:bg-white/[0.03] transition-colors">
+                  <div className={`w-2 h-2 rounded-full mt-1.5 shrink-0 ${
+                    n.type === 'success' ? 'bg-emerald-400' :
+                    n.type === 'warning' ? 'bg-amber-400' :
+                    n.type === 'error' ? 'bg-rose-400' : 'bg-blue-400'
+                  }`} />
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm text-gray-200 leading-relaxed">{n.message}</p>
+                    <p className="text-xs text-gray-500 mt-1">{n.time}</p>
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
         </div>
